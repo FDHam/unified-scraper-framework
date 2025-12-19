@@ -6,11 +6,11 @@ A modular, adapter-based web scraping framework with LZ4 compression and Postgre
 
 ## Why This Exists
 
-This framework was born from a real problem: building a legal rights platform that needed municipal ordinance data from 60+ Florida cities. Each city's legal code lived on different platforms (Municode, American Legal, etc.) with different page structures.
+This framework was born from a real problem: building a legal rights platform that needed municipal ordinance data across the entire state of Florida. Each city's legal code lived on different platforms (Municode, American Legal, etc.) with different page structures.
 
 Manual copying wasn't feasible. Existing scraping tools couldn't handle JavaScript-heavy legal portals. So I built an adapter-based system that could scrape any source with a single config change—and run 10 cities in parallel via GitHub Actions.
 
-**The result**: 60+ cities scraped, 15,000+ ordinances stored, all searchable in a web app. The framework is source-agnostic, so I'm sharing it for others facing similar data collection challenges.
+**The result**: Successfully scraped the state of Florida—60+ municipalities, 15,000+ ordinances, all stored and searchable in a production web app. The framework is source-agnostic, so I'm sharing it for others facing similar large-scale data collection challenges.
 
 ---
 
