@@ -1,0 +1,106 @@
+name: Unified Scraper
+
+on:
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: 'Targets to scrape (comma-separated or "all")'
+        required: false
+        default: 'all'
+      force:
+        description: 'Force re-scrape existing targets'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Job to determine which targets to scrape
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Set target matrix
+        id: set-matrix
+        run: |
+          if [ "${{ github.event.inputs.targets }}" = "all" ]; then
+            # All targets from config - CUSTOMIZE THIS LIST
+            echo 'matrix=["target-1","target-2"]' >> $GITHUB_OUTPUT
+          else
+            # Custom comma-separated list
+            TARGETS='${{ github.event.inputs.targets }}'
+            # Convert to JSON array
+            JSON_ARRAY=$(echo "$TARGETS" | tr ',' '\n' | jq -R . | jq -s .)
+            echo "matrix=$JSON_ARRAY" >> $GITHUB_OUTPUT
+          fi
+
+  scrape:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      matrix:
+        target: ${{ fromJson(needs.prepare.outputs.matrix) }}
+      max-parallel: 10
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+
+      - name: Create logs directory
+        run: mkdir -p logs
+
+      - name: Run scraper for ${{ matrix.target }}
+        continue-on-error: true
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          python main.py ${{ matrix.target }} ${{ github.event.inputs.force == 'true' && '--force' || '' }} --verbose
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ matrix.target }}
+          path: logs/
+          retention-days: 30
+
+  summary:
+    needs: scrape
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## Unified Scraper Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Date**: $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ${{ needs.scrape.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Targets Input**: ${{ github.event.inputs.targets || 'all' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Force Mode**: ${{ github.event.inputs.force || 'false' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Features" >> $GITHUB_STEP_SUMMARY
+          echo "- Multi-source adapter architecture" >> $GITHUB_STEP_SUMMARY
+          echo "- LZ4 compression for storage" >> $GITHUB_STEP_SUMMARY
+          echo "- Auto-skip already scraped targets (unless --force)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "View individual job logs for detailed results." >> $GITHUB_STEP_SUMMARY

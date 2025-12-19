@@ -1,0 +1,30 @@
+{
+  "region": "example",
+  "region_name": "Example Region",
+  "targets": [
+    {
+      "id": "target-1",
+      "name": "Example Site 1",
+      "slug": "example_site_1",
+      "category": "documentation",
+      "url": "https://example.com/docs",
+      "metadata": {
+        "description": "Example documentation site"
+      },
+      "source": "example",
+      "enabled": true
+    },
+    {
+      "id": "target-2",
+      "name": "Example Site 2",
+      "slug": "example_site_2",
+      "category": "news",
+      "url": "https://example.com/news",
+      "metadata": {
+        "description": "Example news site"
+      },
+      "source": "example",
+      "enabled": true
+    }
+  ]
+}
