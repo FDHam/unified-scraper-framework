@@ -4,6 +4,44 @@ A modular, adapter-based web scraping framework with LZ4 compression and Postgre
 
 ---
 
+## Why This Exists
+
+This framework was born from a real problem: building a legal rights platform that needed municipal ordinance data from 60+ Florida cities. Each city's legal code lived on different platforms (Municode, American Legal, etc.) with different page structures.
+
+Manual copying wasn't feasible. Existing scraping tools couldn't handle JavaScript-heavy legal portals. So I built an adapter-based system that could scrape any source with a single config change—and run 10 cities in parallel via GitHub Actions.
+
+**The result**: 60+ cities scraped, 15,000+ ordinances stored, all searchable in a web app. The framework is source-agnostic, so I'm sharing it for others facing similar data collection challenges.
+
+---
+
+## Real-World Use Cases
+
+**1. Legal/Government Data Aggregation**
+- **Problem**: Building a compliance app but regulations are scattered across 50 municipal websites with no API.
+- **Solution**: One adapter per site structure, parallel scraping via GitHub Actions, centralized database.
+
+**2. Competitive Price Monitoring**
+- **Problem**: E-commerce team needs daily competitor pricing from 20 retail sites.
+- **Solution**: Adapters for each retailer, scheduled GitHub Actions runs, price history in PostgreSQL for trend analysis.
+
+**3. Research Data Collection**
+- **Problem**: Academic study requires scraping 10,000 public records from state agency portals.
+- **Solution**: Robust error handling, LZ4 compression for large text fields, resume-on-failure with `--force` flag.
+
+**4. Real Estate Listings Aggregation**
+- **Problem**: Property investment tool needs listings from multiple MLS-adjacent sites.
+- **Solution**: Playwright handles JavaScript-rendered listings, parallel jobs scrape different regions simultaneously.
+
+**5. Job Market Intelligence**
+- **Problem**: Recruiting firm wants to track job postings across niche industry boards.
+- **Solution**: Adapters extract title/company/requirements, categorization tags enable filtering, daily scheduled scrapes.
+
+**6. News & Media Monitoring**
+- **Problem**: PR team needs to track brand mentions across regional news sites.
+- **Solution**: Adapters for each outlet, keyword-based categorization, compressed full-text storage for search.
+
+---
+
 ## Architecture
 
 ```
