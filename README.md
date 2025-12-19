@@ -378,6 +378,166 @@ Adjust in adapter implementations.
 
 ---
 
+## Responsible Scraping: Rate Limits & TOS
+
+**Before scraping any source, you must understand its rules.**
+
+### Check Terms of Service
+
+Every website has terms governing automated access. Before building an adapter:
+
+1. Read the target site's Terms of Service
+2. Check for a `robots.txt` file (`https://example.com/robots.txt`)
+3. Look for API alternatives (APIs are always preferred over scraping)
+4. Respect `Disallow` directives in robots.txt
+
+### Research Rate Limits
+
+Use your AI assistant to research rate limits:
+
+**Prompt:**
+```
+What are the rate limits and scraping policies for [target site]?
+Check their:
+- Terms of Service
+- robots.txt directives
+- API documentation (if available)
+- Any public statements on automated access
+```
+
+### Implement Rate Limits in Your Adapter
+
+Once you know the limits, implement them:
+
+```python
+import time
+import random
+
+class MyAdapter(BaseAdapter):
+    # Site allows 1 request per 2 seconds
+    MIN_DELAY = 2.0
+    MAX_DELAY = 3.0  # Add randomization to appear more human
+
+    def extract_items(self, url: str, target_config: dict) -> List[Dict]:
+        results = []
+
+        for item_url in item_urls:
+            # Respectful delay based on site's rate limits
+            time.sleep(random.uniform(self.MIN_DELAY, self.MAX_DELAY))
+
+            # Extract item...
+
+        return results
+```
+
+### Rate Limit Quick Reference
+
+| Site Policy | Recommended Delay | max-parallel |
+|-------------|-------------------|--------------|
+| No robots.txt restrictions | 1-2 seconds | 10 |
+| "Crawl-delay: 5" in robots.txt | 5+ seconds | 3 |
+| API rate limit: 60/min | 1 second | 1 |
+| Strict TOS against scraping | Don't scrape | 0 |
+
+### When NOT to Scrape
+
+- TOS explicitly prohibits scraping
+- Site requires authentication you don't have rights to
+- Data is copyrighted/proprietary
+- You'd be overloading a small server
+- An official API exists
+
+**Bottom line**: Research first, configure delays accordingly, and scrape responsibly.
+
+---
+
+## AI-Assisted Development
+
+Modern AI assistants (Claude, ChatGPT, Cursor, GitHub Copilot, etc.) can accelerate your adapter development when used methodically.
+
+### Effective Prompts
+
+**Creating a new adapter:**
+```
+I'm using the Unified Scraper Framework. Here's the base adapter interface:
+[paste adapters/base.py]
+
+I need to scrape [target site]. The page structure is:
+- Items are in <div class="listing">
+- Titles are in <h2>
+- Content is in <div class="body">
+
+Create an adapter following the existing pattern.
+```
+
+**Researching rate limits:**
+```
+What are the rate limits and robots.txt policies for [target site]?
+How should I configure delays in my scraper to comply?
+```
+
+**Debugging extraction issues:**
+```
+My adapter returns empty results. Here's my extract_items() method:
+[paste your code]
+
+The page HTML structure is:
+[paste relevant HTML from browser inspector]
+
+Why isn't it finding elements?
+```
+
+**Modifying the database schema:**
+```
+I need to add a "price" field to store numeric values. Here's the current db.py:
+[paste core/db.py]
+
+How do I add this field and update insert_item()?
+```
+
+### Best Practices
+
+| Do | Don't |
+|----|-------|
+| Paste relevant code context | Ask vague questions without code |
+| Research TOS/rate limits first | Scrape blindly and get blocked |
+| Describe the specific site structure | Expect AI to guess your target |
+| Test AI suggestions before committing | Blindly copy-paste without review |
+| Iterate on prompts if results are off | Give up after one attempt |
+
+### Recommended Workflow
+
+1. **Research the target** - Use AI to check TOS, robots.txt, rate limits
+2. **Configure delays** - Implement appropriate rate limiting in your adapter
+3. **Describe your target** - Share the URL structure and what you're extracting
+4. **Provide the base code** - Paste `base.py` and `example.py` as reference
+5. **Ask for specific changes** - "Add pagination support" is better than "make it work"
+6. **Review and test** - Run with `--verbose`, verify output before database writes
+7. **Iterate** - Refine based on actual results
+
+### Example: Building a Job Board Adapter
+
+**Step 1 - Research:**
+```
+What are the scraping policies for jobs.example.com?
+Check their robots.txt and TOS.
+```
+
+**Step 2 - Build:**
+```
+Create an adapter for jobs.example.com with:
+- Job title in <h3 class="job-title">
+- Company in <span class="company">
+- Description in <div class="description">
+
+Include a 3-second delay between requests per their robots.txt Crawl-delay.
+Follow the BaseAdapter pattern.
+```
+
+AI generates working code. You verify TOS compliance, test thoroughly, and handle edge cases.
+
+---
+
 ## License
 
 MIT - Use freely, modify as needed.
