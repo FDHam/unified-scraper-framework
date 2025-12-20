@@ -8,12 +8,12 @@ A modular, adapter-based web scraping framework with Playwright automation, LZ4 
 
 - [Why This Exists](#why-this-exists)
 - [Real-World Use Cases](#real-world-use-cases)
-- [Quick Start](#quick-start)
 - [Responsible Scraping](#responsible-scraping)
-- [AI-Assisted Development](#ai-assisted-development)
-- [Creating Custom Adapters](#creating-custom-adapters)
+- [Quick Start](#quick-start)
 - [Architecture](#architecture)
 - [Directory Structure](#directory-structure)
+- [Creating Custom Adapters](#creating-custom-adapters)
+- [AI-Assisted Development](#ai-assisted-development)
 - [Configuration Format](#configuration-format)
 - [GitHub Actions](#github-actions)
 - [Parallel Execution](#parallel-execution)
@@ -39,24 +39,6 @@ Now open-sourced for anyone facing similar large-scale data collection challenge
 - **Real Estate Listings** — Harvest JS-rendered property data across regions
 - **Job Market Intel** — Monitor postings across niche industry boards
 - **News Monitoring** — Track brand mentions across regional outlets
-
----
-
-## Quick Start
-
-```bash
-# 1. Install
-pip install -r requirements.txt
-playwright install chromium
-
-# 2. Configure
-export DATABASE_URL="postgresql://user:pass@host:5432/db"
-
-# 3. Run
-python main.py --list              # See available targets
-python main.py target-1            # Scrape a target
-python main.py target-1 --force    # Force re-scrape
-```
 
 ---
 
@@ -111,58 +93,21 @@ class MyAdapter(BaseAdapter):
 
 ---
 
-## AI-Assisted Development
+## Quick Start
 
-Use AI assistants (Claude, ChatGPT, Cursor, Copilot) to accelerate adapter development.
+```bash
+# 1. Install
+pip install -r requirements.txt
+playwright install chromium
 
-### Key Prompts
+# 2. Configure
+export DATABASE_URL="postgresql://user:pass@host:5432/db"
 
-**Research rate limits first:**
+# 3. Run
+python main.py --list              # See available targets
+python main.py target-1            # Scrape a target
+python main.py target-1 --force    # Force re-scrape
 ```
-What are the rate limits and robots.txt policies for [target site]?
-```
-
-**Create an adapter:**
-```
-I'm using Scraperdactyl. Here's the base adapter:
-[paste adapters/base.py]
-
-Target site structure:
-- Items in <div class="listing">
-- Titles in <h2>
-- Content in <div class="body">
-
-Create an adapter following this pattern.
-```
-
-**Debug extraction:**
-```
-My adapter returns empty. Here's extract_items():
-[paste code]
-
-Page HTML:
-[paste from browser inspector]
-```
-
-### Best Practices
-
-| Do | Don't |
-|----|-------|
-| Research TOS/rate limits first | Scrape blindly |
-| Paste relevant code context | Ask vague questions |
-| Test before committing | Copy-paste without review |
-
----
-
-## Creating Custom Adapters
-
-**Full guide: [ADAPTER_GUIDE.md](ADAPTER_GUIDE.md)**
-
-Quick overview:
-1. Copy `adapters/example.py` → `adapters/mysite.py`
-2. Implement `validate_url()` and `extract_items()`
-3. Register in `adapters/__init__.py`
-4. Add targets to `config/` JSON
 
 ---
 
@@ -217,6 +162,61 @@ scraperdactyl/
 └── .github/workflows/
     └── scraper.yml      # GitHub Actions
 ```
+
+---
+
+## Creating Custom Adapters
+
+**Full guide: [ADAPTER_GUIDE.md](ADAPTER_GUIDE.md)**
+
+Quick overview:
+1. Copy `adapters/example.py` → `adapters/mysite.py`
+2. Implement `validate_url()` and `extract_items()`
+3. Register in `adapters/__init__.py`
+4. Add targets to `config/` JSON
+
+---
+
+## AI-Assisted Development
+
+Use AI assistants (Claude, ChatGPT, Cursor, Copilot) to accelerate adapter development.
+
+### Key Prompts
+
+**Research rate limits first:**
+```
+What are the rate limits and robots.txt policies for [target site]?
+```
+
+**Create an adapter:**
+```
+I'm using Scraperdactyl. Here's the base adapter:
+[paste adapters/base.py]
+
+Target site structure:
+- Items in <div class="listing">
+- Titles in <h2>
+- Content in <div class="body">
+
+Create an adapter following this pattern.
+```
+
+**Debug extraction:**
+```
+My adapter returns empty. Here's extract_items():
+[paste code]
+
+Page HTML:
+[paste from browser inspector]
+```
+
+### Best Practices
+
+| Do | Don't |
+|----|-------|
+| Research TOS/rate limits first | Scrape blindly |
+| Paste relevant code context | Ask vague questions |
+| Test before committing | Copy-paste without review |
 
 ---
 
