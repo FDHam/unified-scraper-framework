@@ -19,7 +19,10 @@ A modular, adapter-based web scraping framework with Playwright automation, LZ4 
 - [Parallel Execution](#parallel-execution)
 - [Database Schema](#database-schema)
 - [Core Functions](#core-functions)
+- [Storage Best Practices](#storage-best-practices)
 - [License](#license)
+
+*Important: See [Storage Best Practices](#storage-best-practices)*
 
 ---
 
@@ -376,6 +379,39 @@ decompress_text(data) -> str
 ```python
 categorize_content(title, text) -> (category, tags)
 ```
+
+</details>
+
+---
+
+## Storage Best Practices
+
+<details>
+<summary><strong>When to Use Compression (Critical)</strong></summary>
+
+LZ4 compression is optimized for **cold storage** — raw scraped data you rarely touch.
+
+**Do NOT** query compressed data directly in production. This creates:
+- CPU overhead on every read
+- Decompression latency
+- Slow full-text search
+- Bottlenecks on write-heavy systems
+
+### Recommended Architecture
+
+| Layer | Purpose | Compression | Query Directly? |
+|-------|---------|-------------|-----------------|
+| Cold | Raw scraped data | LZ4 ✅ | ❌ Never |
+| Warm | Derived extracts | Optional | Occasionally |
+| Hot | Summaries, structured outputs | None | ✅ Always |
+
+### The Pattern
+
+1. **Scrape** → Store compressed (this framework)
+2. **Process** → Decompress once, generate derived outputs
+3. **Serve** → Query only uncompressed, structured data
+
+This is how Bloomberg Law, Fastcase, and CourtListener handle large-scale legal data.
 
 </details>
 
