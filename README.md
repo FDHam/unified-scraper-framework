@@ -4,6 +4,28 @@ A modular, adapter-based web scraping framework with LZ4 compression and Postgre
 
 ---
 
+## Table of Contents
+
+- [Why This Exists](#why-this-exists)
+- [Real-World Use Cases](#real-world-use-cases)
+- [Architecture](#architecture)
+- [Quick Start](#quick-start)
+- [Directory Structure](#directory-structure)
+- [Creating Custom Adapters](#creating-custom-adapters)
+- [GitHub Actions](#github-actions)
+- [Parallel Execution & Rate Limiting](#parallel-execution--rate-limiting)
+- [Configuration Format](#configuration-format)
+- [Database Schema](#database-schema)
+- [Core Functions](#core-functions)
+- [Compression Details](#compression-details)
+- [Rate Limiting](#rate-limiting)
+- [Responsible Scraping: Rate Limits & TOS](#responsible-scraping-rate-limits--tos)
+- [AI-Assisted Development](#ai-assisted-development)
+- [License](#license)
+- [Contributing](#contributing)
+
+---
+
 ## Why This Exists
 
 This framework was born from a real problem: building a legal rights platform that needed municipal ordinance data across the entire state of Florida. Each city's legal code lived on different platforms (Municode, American Legal, etc.) with different page structures.
